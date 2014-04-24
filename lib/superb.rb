@@ -58,6 +58,9 @@ module Superb
   end
 
 
+  # A Context instance is a container for instance
+  # variables.  These variables can then be applied
+  # to an ERB template.
   class Context
     include AttributeMagic
 
@@ -65,12 +68,45 @@ module Superb
       self.merge!(options)
     end
 
+    def dup
+      Superb::Context.new(self.to_hash)
+    end
 
-    def render(template)
+    def apply_to(template)
       template.result(binding)
     end
 
   end
+
+
+
+  # Templates are bound to a specific ERB instance.
+  # They maintain their own state, but they also allow
+  # for individual values to be overridden when being
+  # rendered.
+  class Template
+    include AttributeMagic
+
+    attr_accessor :__erb
+
+    def initialize(erb, options = {})
+      @__erb = erb
+      self.merge!(options)
+    end
+
+    def dup
+      Superb::Template.new(@__erb, self.to_hash)
+    end
+
+    def render(options = {})
+      c = Superb::Context.new(self.to_hash)
+      c.merge!(options)
+      c.apply_to(@__erb)
+    end
+  end
+
+
+
 
 
 end
