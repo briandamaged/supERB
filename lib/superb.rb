@@ -100,6 +100,11 @@ module Superb
       self.merge!(options)
     end
 
+    def self.open(path, options = {})
+      erb = Kernel.open(path){|fin| ERB.new(fin.read) }
+      self.new(erb, options)
+    end
+
     def dup
       Superb::Template.new(@__erb, self.to_hash)
     end
