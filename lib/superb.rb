@@ -44,6 +44,12 @@ module Superb
       hashable.to_hash.each do |k, v|
         self[k] = v
       end
+
+      return self
+    end
+
+    def merge(hashable)
+      self.dup.merge!(hashable)
     end
 
     def to_hash
